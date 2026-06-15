@@ -51,13 +51,13 @@
                 <label for="item-category-select">หมวดหมู่</label>
                 <select id="item-category-select" class="form-input" required>
                   <option value="" disabled selected>เลือกหมวดหมู่</option>
-                  <option value="Other">หมวดหมู่อื่น ๆ</option>
+                  <option value="other">หมวดหมู่อื่น ๆ</option>
                 </select>
               </div>
 
   
               <div id="custom-category-group" class="form-group custom-category-group hidden">
-                <label for="custom-category-input">เลือกชื่อหมวดหมู่</label>
+                <label for="custom-category-input">ใส่ชื่อหมวดหมู่</label>
                 <input type="text" id="custom-category-input" class="form-input" placeholder="เช่น เครื่องเงิน ไซส์ชุด">
               </div>
 
@@ -75,8 +75,8 @@
         <div class="right-panel">
           <div class="glass-panel" style="flex: 1; display: flex; flex-direction: column;">
             <div class="items-section-header">
-              <h2>Items Counter</h2>
-              <span id="items-count-badge" class="count-badge">0 items</span>
+              <h2>จำนวนยอดขาย</h2>
+              <span id="items-count-badge" class="count-badge">0 ชิ้น</span>
             </div>
             
             <div id="items-grid" class="items-grid">
@@ -86,8 +86,8 @@
 
           <div class="glass-panel log-panel">
             <div class="log-header">
-              <h2>Activity Log</h2>
-              <button id="clear-logs-btn" class="log-clear-btn">Clear Logs</button>
+              <h2>ประวัติการทำรายการ</h2>
+              <button id="clear-logs-btn" class="log-clear-btn">ลบข้อมูล</button>
             </div>
             <ul id="log-list" class="log-list">
 
@@ -102,7 +102,7 @@
     <div id="stock-view" class="view-section hidden">
       <div class="stock-sheet-container">
         <div class="glass-panel">
-          <h2>Stock Sheet</h2>
+          <h2>รายงานสต็อค</h2>
           <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 1.5rem; margin-top: -0.5rem;">
             สำหรับใส่จำนวนของที่เบิกมาจากห้องสต็อคและจำนวนสต็อคที่เหลือภายในห้อง โดยจะแบ่งเป็นช่วงเช้าและบ่าย
           </p>
@@ -111,18 +111,18 @@
             <table class="stock-table">
               <thead>
                 <tr>
-                  <th rowspan="2">Item Name</th>
-                  <th colspan="3" class="section-divider">Morning Shift</th>
-                  <th colspan="3" class="section-divider">Afternoon Shift</th>
-                  <th rowspan="2">Total Sold</th>
+                  <th rowspan="2">ชื่อสินค้า</th>
+                  <th colspan="3" class="section-divider">ช่วงเช้า</th>
+                  <th colspan="3" class="section-divider">ช่วงบ่าย</th>
+                  <th rowspan="2">ยอดขายทั้หมด</th>
                 </tr>
                 <tr>
-                  <th>Before Sell</th>
-                  <th>After Sell</th>
-                  <th class="section-divider">Stock Out</th>
-                  <th>Before Sell</th>
-                  <th>After Sell</th>
-                  <th class="section-divider">Stock Out</th>
+                  <th>ก่อนขาย</th>
+                  <th>หลังขาย</th>
+                  <th class="section-divider">เบิกจากสต็อค</th>
+                  <th>ก่อนขาย</th>
+                  <th>หลังขาย</th>
+                  <th class="section-divider">เบิกจากสต็อค</th>
                 </tr>
               </thead>
               <tbody id="stock-table-body">
@@ -140,19 +140,19 @@
       <div class="summary-container">
         
         <div class="summary-header">
-          <h2>Sales Dashboard</h2>
+          <h2>สรุปรายการ</h2>
           <div class="summary-header-actions">
             <button id="export-pdf-btn" class="btn btn-primary">
               <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
               </svg>
-              Export PDF
+              ส่งออก PDF
             </button>
             <button id="back-to-counter-btn" class="btn btn-secondary">
               <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
               </svg>
-              Return to Counter
+              กลับไปหน้ายอดขาย
             </button>
           </div>
         </div>
@@ -166,7 +166,7 @@
               </svg>
             </div>
             <div class="stat-details">
-              <span class="stat-label">Total Items Sold</span>
+              <span class="stat-label">สินค้าที่ขายทั้งหมด</span>
               <span id="stat-total-sold" class="stat-value">0</span>
             </div>
           </div>
@@ -178,7 +178,7 @@
               </svg>
             </div>
             <div class="stat-details">
-              <span class="stat-label">Active Categories</span>
+              <span class="stat-label">จำนวนหมวดหมู่ทั้งหมด</span>
               <span id="stat-active-categories" class="stat-value">0</span>
             </div>
           </div>
@@ -190,7 +190,7 @@
               </svg>
             </div>
             <div class="stat-details">
-              <span class="stat-label">Best Selling Item</span>
+              <span class="stat-label">สินค้าขายดีมากที่สุด</span>
               <span id="stat-best-selling" class="stat-value" style="font-size: 1.2rem; font-weight: 600; line-height: 1.6;">None</span>
             </div>
           </div>
@@ -201,21 +201,21 @@
           
 
           <div class="glass-panel">
-            <h2>Sales Breakdown by Category</h2>
+            <h2>ยอดขายของแต่ละสินค้า</h2>
             <div id="category-chart-container" class="chart-container">
 
             </div>
           </div>
 
           <div class="glass-panel">
-            <h2>Tally Details</h2>
+            <h2>จำนวนสินค้าที่เบิกจากสต็อค</h2>
             <div class="summary-table-container">
               <table class="summary-table">
                 <thead>
                   <tr>
-                    <th>Item Name</th>
-                    <th>Category</th>
-                    <th style="text-align: right;">Quantity Sold</th>
+                    <th>ชื่อสินค้า</th>
+                    <th>หมวดหมู่</th>
+                    <th style="text-align: right;">จำนวนที่ขาย</th>
                   </tr>
                 </thead>
                 <tbody id="summary-table-body">
