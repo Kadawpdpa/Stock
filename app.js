@@ -70,7 +70,7 @@ const storage = {
           if (item.afternoonAfter === undefined) item.afternoonAfter = 0;
         });
       } catch (e) {
-        console.error('Failed to parse saved state:', e);
+        console.error('เกิดข้อผิดพลาดในการแปลงข้อมูลสถานะที่บันทึกไว้:', e);
       }
     }
   }
@@ -164,7 +164,7 @@ function renderLogs() {
   if (state.logs.length === 0) {
     el.logList.innerHTML = `
       <li class="log-item" style="justify-content: center; color: var(--text-muted); border-left: none;">
-        No activity logged yet.
+        ยังไม่มีประวัติการทำรายการในขณะนี้.
       </li>
     `;
     return;
