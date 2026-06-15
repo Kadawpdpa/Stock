@@ -1,54 +1,53 @@
-// Application State
+
 let state = {
   items: [],
   logs: [],
-  theme: 'dark' // default theme
+  theme: 'dark' 
 };
 
-// DOM Elements
+
 const el = {
-  // Views
+
   counterView: document.getElementById('counter-view'),
   stockView: document.getElementById('stock-view'),
   summaryView: document.getElementById('summary-view'),
   
-  // Navigation Tabs
+
   tabCounter: document.getElementById('tab-counter'),
   tabStock: document.getElementById('tab-stock'),
   tabSummary: document.getElementById('tab-summary'),
   
-  // Extra Navigation buttons
+
   backToCounterBtn: document.getElementById('back-to-counter-btn'),
   
-  // Theme Switcher Buttons
+
   themeBtns: document.querySelectorAll('.theme-btn'),
   
-  // Form elements
+
   addItemForm: document.getElementById('add-item-form'),
   itemNameInput: document.getElementById('item-name'),
   categorySelect: document.getElementById('item-category-select'),
   customCategoryGroup: document.getElementById('custom-category-group'),
   customCategoryInput: document.getElementById('custom-category-input'),
   
-  // Lists, Grids, and Tables
+
   itemsGrid: document.getElementById('items-grid'),
   itemsCountBadge: document.getElementById('items-count-badge'),
   logList: document.getElementById('log-list'),
   clearLogsBtn: document.getElementById('clear-logs-btn'),
   stockTableBody: document.getElementById('stock-table-body'),
   
-  // Summary Stats
+
   statTotalSold: document.getElementById('stat-total-sold'),
   statActiveCategories: document.getElementById('stat-active-categories'),
   statBestSelling: document.getElementById('stat-best-selling'),
-  
-  // Summary Analytics
+
   categoryChartContainer: document.getElementById('category-chart-container'),
   summaryTableBody: document.getElementById('summary-table-body'),
   exportPdfBtn: document.getElementById('export-pdf-btn')
 };
 
-// Local Storage Helper
+
 const storage = {
   save() {
     localStorage.setItem('aerocount_state_v2', JSON.stringify(state));
@@ -58,12 +57,12 @@ const storage = {
     if (saved) {
       try {
         state = JSON.parse(saved);
-        // Safety checks for malformed data
+  
         if (!Array.isArray(state.items)) state.items = [];
         if (!Array.isArray(state.logs)) state.logs = [];
         if (!state.theme) state.theme = 'dark';
         
-        // Migrate items to support stock tracking properties if they don't exist
+
         state.items.forEach(item => {
           if (item.morningBefore === undefined) item.morningBefore = 0;
           if (item.morningAfter === undefined) item.morningAfter = 0;
@@ -77,7 +76,7 @@ const storage = {
   }
 };
 
-// Utilities
+
 function generateId() {
   return Date.now().toString(36) + Math.random().toString(36).substr(2, 5);
 }
@@ -92,7 +91,7 @@ function getFormattedTime() {
   });
 }
 
-// Log actions
+
 function addLog(text, type = 'info') {
   const timestamp = getFormattedTime();
   const logEntry = {
@@ -111,7 +110,7 @@ function addLog(text, type = 'info') {
   renderLogs();
 }
 
-// Renderers
+
 function renderItems() {
   el.itemsGrid.innerHTML = '';
   
@@ -150,7 +149,7 @@ function renderItems() {
       </div>
     `;
     
-    // Bind listeners
+
     card.querySelector('.counter-btn-plus').addEventListener('click', () => adjustCount(item.id, 1));
     card.querySelector('.counter-btn-minus').addEventListener('click', () => adjustCount(item.id, -1));
     card.querySelector('.item-delete-btn').addEventListener('click', () => removeItem(item.id));
@@ -182,7 +181,7 @@ function renderLogs() {
   });
 }
 
-// Render Stock Sheet Table
+
 function renderStockTable() {
   el.stockTableBody.innerHTML = '';
   
@@ -231,11 +230,11 @@ function renderStockTable() {
       </td>
     `;
     
-    // Check validation on render
+
     validateStockRow(tr.querySelector('[data-field="morningBefore"]'), tr.querySelector('[data-field="morningAfter"]'));
     validateStockRow(tr.querySelector('[data-field="afternoonBefore"]'), tr.querySelector('[data-field="afternoonAfter"]'));
 
-    // Bind input listeners
+
     tr.querySelectorAll('.stock-input').forEach(input => {
       input.addEventListener('input', (e) => {
         const itemId = e.target.getAttribute('data-id');
@@ -270,17 +269,17 @@ function updateStockValue(itemId, field, val, rowEl) {
   const oldVal = item[field];
   item[field] = val;
   
-  // Row reference elements
+
   const morningBeforeInput = rowEl.querySelector('[data-field="morningBefore"]');
   const morningAfterInput = rowEl.querySelector('[data-field="morningAfter"]');
   const afternoonBeforeInput = rowEl.querySelector('[data-field="afternoonBefore"]');
   const afternoonAfterInput = rowEl.querySelector('[data-field="afternoonAfter"]');
   
-  // Validate row
+
   validateStockRow(morningBeforeInput, morningAfterInput);
   validateStockRow(afternoonBeforeInput, afternoonAfterInput);
   
-  // Calculate differences
+
   const morningOut = Math.max(0, (parseInt(morningBeforeInput.value) || 0) - (parseInt(morningAfterInput.value) || 0));
   const afternoonOut = Math.max(0, (parseInt(afternoonBeforeInput.value) || 0) - (parseInt(afternoonAfterInput.value) || 0));
   const newTotalCount = morningOut + afternoonOut;
@@ -288,40 +287,38 @@ function updateStockValue(itemId, field, val, rowEl) {
   const oldCount = item.count;
   item.count = newTotalCount;
   
-  // Update UI values in the row directly for performance
+
   rowEl.querySelector(`#morning-out-${itemId}`).textContent = morningOut;
   rowEl.querySelector(`#afternoon-out-${itemId}`).textContent = afternoonOut;
   rowEl.querySelector(`#total-out-${itemId}`).textContent = newTotalCount;
   
   storage.save();
   
-  // Log change if value actually changed
+
   if (oldVal !== val) {
     const cleanFieldName = field.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
     addLog(`Updated stock **${cleanFieldName}** for **${item.name}** to **${val}** (Sales count synchronized to **${newTotalCount}**)`, 'info');
   }
 }
 
-// Adjust counter manually from Counter Page
+
 function adjustCount(itemId, delta) {
   const item = state.items.find(i => i.id === itemId);
   if (!item) return;
   
   const oldCount = item.count;
-  if (delta < 0 && item.count <= 0) return; // Clamped at 0
+  if (delta < 0 && item.count <= 0) return; 
   
   item.count += delta;
   
-  // Auto-sync back to Afternoon remaining stock to make data coherent
-  // If count is adjusted manually, adjust the remaining stocks appropriately
+
   if (item.morningBefore || item.afternoonBefore) {
-    // If they have set stock, manually adjusting count reduces remaining stocks
+
     if (delta > 0) {
       if (item.afternoonAfter > 0) item.afternoonAfter = Math.max(0, item.afternoonAfter - 1);
       else if (item.morningAfter > 0) item.morningAfter = Math.max(0, item.morningAfter - 1);
     } else {
-      // delta < 0
-      // if they decrease counts, remaining stock increases
+
       if (item.afternoonBefore > item.afternoonAfter) item.afternoonAfter++;
       else if (item.morningBefore > item.morningAfter) item.morningAfter++;
     }
@@ -339,7 +336,7 @@ function adjustCount(itemId, delta) {
   addLog(`${actionPhrase} <strong>${item.name}</strong> sold count (${oldCount} &rarr; ${item.count})`, changeType);
 }
 
-// Add Item
+
 function addItem(name, category) {
   const isDuplicate = state.items.some(
     item => item.name.toLowerCase() === name.toLowerCase() && item.category.toLowerCase() === category.toLowerCase()
@@ -369,7 +366,7 @@ function addItem(name, category) {
   return true;
 }
 
-// Delete Item
+
 function removeItem(itemId) {
   const item = state.items.find(i => i.id === itemId);
   if (!item) return;
@@ -382,7 +379,7 @@ function removeItem(itemId) {
   }
 }
 
-// Clear Logs
+
 function clearLogs() {
   if (confirm('Are you sure you want to clear all history logs?')) {
     state.logs = [];
@@ -392,7 +389,7 @@ function clearLogs() {
   }
 }
 
-// Navigate and Calculate Summary
+
 function updateSummaryDashboard() {
   let totalSold = 0;
   const categories = new Set();
@@ -422,7 +419,7 @@ function updateSummaryDashboard() {
     el.statBestSelling.textContent = 'None';
   }
   
-  // Render category chart
+
   el.categoryChartContainer.innerHTML = '';
   const sortedCategories = Object.entries(categoryTotals).sort((a, b) => b[1] - a[1]);
   
@@ -455,7 +452,7 @@ function updateSummaryDashboard() {
     });
   }
   
-  // Render Detailed Table
+
   el.summaryTableBody.innerHTML = '';
   
   if (state.items.length === 0) {
@@ -479,19 +476,18 @@ function updateSummaryDashboard() {
   }
 }
 
-// Switch between views
+
 function showView(viewId) {
-  // Update Tab States
+
   el.tabCounter.classList.toggle('active', viewId === 'counter');
   el.tabStock.classList.toggle('active', viewId === 'stock');
   el.tabSummary.classList.toggle('active', viewId === 'summary');
-  
-  // Hide All Views
+
   el.counterView.classList.add('hidden');
   el.stockView.classList.add('hidden');
   el.summaryView.classList.add('hidden');
   
-  // Show Chosen View and render fresh data
+
   if (viewId === 'counter') {
     el.counterView.classList.remove('hidden');
     renderItems();
@@ -504,20 +500,20 @@ function showView(viewId) {
   }
 }
 
-// Theme Switcher Logic
+
 function applyTheme(themeName) {
-  document.body.className = ''; // Reset classes
+  document.body.className = ''; 
   document.body.classList.add(`theme-${themeName}`);
   state.theme = themeName;
   storage.save();
   
-  // Update active state in theme buttons
+
   el.themeBtns.forEach(btn => {
     btn.classList.toggle('active', btn.getAttribute('data-theme') === themeName);
   });
 }
 
-// Form logic
+
 el.categorySelect.addEventListener('change', (e) => {
   if (e.target.value === 'Other') {
     el.customCategoryGroup.classList.remove('hidden');
@@ -553,7 +549,7 @@ el.addItemForm.addEventListener('submit', (e) => {
   }
 });
 
-// HTML escaping helper to prevent XSS
+
 function escapeHTML(str) {
   return str.replace(/[&<>'"]/g, 
     tag => ({
@@ -566,7 +562,7 @@ function escapeHTML(str) {
   );
 }
 
-// Event Listeners
+
 el.tabCounter.addEventListener('click', () => showView('counter'));
 el.tabStock.addEventListener('click', () => showView('stock'));
 el.tabSummary.addEventListener('click', () => showView('summary'));
@@ -574,24 +570,24 @@ el.tabSummary.addEventListener('click', () => showView('summary'));
 el.backToCounterBtn.addEventListener('click', () => showView('counter'));
 el.clearLogsBtn.addEventListener('click', clearLogs);
 
-// Wire Theme Buttons
+
 el.themeBtns.forEach(btn => {
   btn.addEventListener('click', () => {
     applyTheme(btn.getAttribute('data-theme'));
   });
 });
 
-// PDF Export Action
+
 el.exportPdfBtn.addEventListener('click', () => {
   window.print();
 });
 
-// Initialize App
+
 function init() {
   storage.load();
   applyTheme(state.theme);
   
-  // Show default view
+
   showView('counter');
   renderLogs();
 }
