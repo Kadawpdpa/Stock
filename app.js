@@ -120,10 +120,10 @@ function renderItems() {
         <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
           <path stroke-linecap="round" stroke-linejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5m8.25 3v6.75m0 0l-3-3m3 3l3-3M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z"></path>
         </svg>
-        <p>No items registered yet. Use the form on the left to add items to your counter sheet.</p>
+        <p>ไม่มีสินค้าที่ขายในขณะนี้</p>
       </div>
     `;
-    el.itemsCountBadge.textContent = '0 items';
+    el.itemsCountBadge.textContent = '0 ชิ้น';
     return;
   }
   
@@ -189,7 +189,7 @@ function renderStockTable() {
     el.stockTableBody.innerHTML = `
       <tr>
         <td colspan="8" style="text-align: center; color: var(--text-muted); padding: 3rem;">
-          No items registered. Add items under the "Counter" tab to start stock counting.
+          ไม่มีสินค้าในขณะนี้.
         </td>
       </tr>
     `;
@@ -297,7 +297,7 @@ function updateStockValue(itemId, field, val, rowEl) {
 
   if (oldVal !== val) {
     const cleanFieldName = field.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
-    addLog(`Updated stock **${cleanFieldName}** for **${item.name}** to **${val}** (Sales count synchronized to **${newTotalCount}**)`, 'info');
+    addLog(`อัพเดทสต็อค **${cleanFieldName}** สำหรับ **${item.name}** ไป **${val}** (ข้อมูลจำนวนยอดขายได้ทำการซิงก์ไปยัง **${newTotalCount}**)`, 'ข้อมูล');
   }
 }
 
@@ -333,7 +333,7 @@ function adjustCount(itemId, delta) {
   
   const changeType = delta > 0 ? 'increment' : 'decrement';
   const actionPhrase = delta > 0 ? 'Increased' : 'Decreased';
-  addLog(`${actionPhrase} <strong>${item.name}</strong> sold count (${oldCount} &rarr; ${item.count})`, changeType);
+  addLog(`${actionPhrase} <strong>${item.name}</strong> จำนวนยอดขาย (${oldCount} &rarr; ${item.count})`, changeType);
 }
 
 
@@ -343,7 +343,7 @@ function addItem(name, category) {
   );
   
   if (isDuplicate) {
-    alert(`Item "${name}" already exists in the "${category}" category.`);
+    alert(`"${name}" มีในหมวดหมู่ "${category}" แล้ว`);
     return false;
   }
   
@@ -362,7 +362,7 @@ function addItem(name, category) {
   storage.save();
   renderItems();
   
-  addLog(`Registered new item <strong>${name}</strong> under <strong>${category}</strong>`, 'add-item');
+  addLog(`เพิ่มสินค้า <strong>${name}</strong> ในหมวดหมู่ <strong>${category}</strong>`, 'เพิ่มสินค้า');
   return true;
 }
 
@@ -371,21 +371,21 @@ function removeItem(itemId) {
   const item = state.items.find(i => i.id === itemId);
   if (!item) return;
   
-  if (confirm(`Are you sure you want to remove "${item.name}"? This will delete all its data and counts.`)) {
+  if (confirm(`ยืนยันที่จะลบ "${item.name}"? ข้อมูลจะสูญหายทั้งหมด.`)) {
     state.items = state.items.filter(i => i.id !== itemId);
     storage.save();
     renderItems();
-    addLog(`Deleted item <strong>${item.name}</strong> from catalog`, 'delete-item');
+    addLog(`ลบ <strong>${item.name}</strong> ออกจากสต็อคห้อง`, 'ลบสินค้า');
   }
 }
 
 
 function clearLogs() {
-  if (confirm('Are you sure you want to clear all history logs?')) {
+  if (confirm('ต้องการที่จะลบประวัติการทำรายการใช่หรือไม่?')) {
     state.logs = [];
     storage.save();
     renderLogs();
-    addLog('Activity logs cleared', 'clear');
+    addLog('ล้างประวัติการทำรายการ', 'ล้างประวัติ');
   }
 }
 
