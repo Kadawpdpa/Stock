@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AeroCount // Premium Sold Item Tracker</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="theme-dark">
+
+  <div class="app-container">
+    
+    <!-- GLOBAL HEADER & CONTROLS -->
+    <header>
+      <div class="logo-section">
+        <h1>AeroCount</h1>
+        <p id="app-subtitle">Sales Counter & Logging Terminal</p>
+      </div>
+      
+      <div class="header-controls">
+        <!-- Theme Switcher -->
+        <div class="theme-switcher">
+          <span class="theme-switcher-label">Theme</span>
+          <button class="theme-btn theme-btn-dark active" data-theme="dark" title="Dark Theme"></button>
+          <button class="theme-btn theme-btn-bw" data-theme="bw" title="Black & White Theme"></button>
+          <button class="theme-btn theme-btn-pink" data-theme="pink" title="Pink Theme"></button>
+        </div>
+        
+        <!-- Navigation Tabs -->
+        <nav class="nav-tabs">
+          <button id="tab-counter" class="tab-btn active">Counter</button>
+          <button id="tab-stock" class="tab-btn">Stock Sheet</button>
+          <button id="tab-summary" class="tab-btn">Summary</button>
+        </nav>
+      </div>
+    </header>
+
+    <!-- 1. COUNTER VIEW (DEFAULT) -->
+    <div id="counter-view" class="view-section">
+      <div class="dashboard-grid">
+        
+        <!-- Left Panel: Input Form -->
+        <div class="left-panel">
+          <div class="glass-panel">
+            <h2>Add Item</h2>
+            <form id="add-item-form" autocomplete="off">
+              <div class="form-group">
+                <label for="item-name">Item Name</label>
+                <input type="text" id="item-name" class="form-input" placeholder="e.g. Vintage Leather Jacket" required>
+              </div>
+              
+              <div class="form-group">
+                <label for="item-category-select">Category</label>
+                <select id="item-category-select" class="form-input" required>
+                  <option value="" disabled selected>Select a category...</option>
+                  <option value="Clothing">Clothing</option>
+                  <option value="Electronics">Electronics</option>
+                  <option value="Accessories">Accessories</option>
+                  <option value="Home & Living">Home & Living</option>
+                  <option value="Books">Books</option>
+                  <option value="Other">Other (Create custom...)</option>
+                </select>
+              </div>
+
+              <!-- Custom Category Text Input (appears when 'Other' is selected) -->
+              <div id="custom-category-group" class="form-group custom-category-group hidden">
+                <label for="custom-category-input">Custom Category Name</label>
+                <input type="text" id="custom-category-input" class="form-input" placeholder="e.g. Footwear">
+              </div>
+
+              <button type="submit" class="btn" style="width: 100%; margin-top: 0.5rem; background: rgba(99, 102, 241, 0.15); color: var(--color-primary); border-color: rgba(99, 102, 241, 0.25);">
+                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"></path>
+                </svg>
+                Register Item
+              </button>
+            </form>
+          </div>
+        </div>
+
+        <!-- Right Panel: Counters Grid & Activity Log -->
+        <div class="right-panel">
+          <div class="glass-panel" style="flex: 1; display: flex; flex-direction: column;">
+            <div class="items-section-header">
+              <h2>Items Counter</h2>
+              <span id="items-count-badge" class="count-badge">0 items</span>
+            </div>
+            
+            <div id="items-grid" class="items-grid">
+              <!-- Dynamically populated item cards go here -->
+            </div>
+          </div>
+
+          <!-- Activity Log Panel -->
+          <div class="glass-panel log-panel">
+            <div class="log-header">
+              <h2>Activity Log</h2>
+              <button id="clear-logs-btn" class="log-clear-btn">Clear Logs</button>
+            </div>
+            <ul id="log-list" class="log-list">
+              <!-- Dynamically populated logs go here -->
+            </ul>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+
+    <!-- 2. STOCK COUNTING SHEET VIEW -->
+    <div id="stock-view" class="view-section hidden">
+      <div class="stock-sheet-container">
+        <div class="glass-panel">
+          <h2>Stock Sheet</h2>
+          <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 1.5rem; margin-top: -0.5rem;">
+            Record starting stock and remaining stock for both morning and afternoon shifts. Stock out quantities are auto-calculated and synced to sales.
+          </p>
+          
+          <div class="stock-sheet-table-wrapper">
+            <table class="stock-table">
+              <thead>
+                <tr>
+                  <th rowspan="2">Item Name</th>
+                  <th colspan="3" class="section-divider">Morning Shift</th>
+                  <th colspan="3" class="section-divider">Afternoon Shift</th>
+                  <th rowspan="2">Total Sold</th>
+                </tr>
+                <tr>
+                  <th>Before Sell</th>
+                  <th>After Sell</th>
+                  <th class="section-divider">Stock Out</th>
+                  <th>Before Sell</th>
+                  <th>After Sell</th>
+                  <th class="section-divider">Stock Out</th>
+                </tr>
+              </thead>
+              <tbody id="stock-table-body">
+                <!-- Dynamically populated stock entries go here -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- 3. FINAL RESULTS SUMMARY VIEW -->
+    <div id="summary-view" class="view-section hidden">
+      <div class="summary-container">
+        
+        <div class="summary-header">
+          <h2>Sales Dashboard</h2>
+          <div class="summary-header-actions">
+            <button id="export-pdf-btn" class="btn btn-primary">
+              <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+              </svg>
+              Export PDF
+            </button>
+            <button id="back-to-counter-btn" class="btn btn-secondary">
+              <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+              </svg>
+              Return to Counter
+            </button>
+          </div>
+        </div>
+
+        <!-- Metrics Dashboard -->
+        <div class="stats-cards-grid">
+          <div class="glass-panel stat-card">
+            <div class="stat-icon success">
+              <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
+              </svg>
+            </div>
+            <div class="stat-details">
+              <span class="stat-label">Total Items Sold</span>
+              <span id="stat-total-sold" class="stat-value">0</span>
+            </div>
+          </div>
+
+          <div class="glass-panel stat-card">
+            <div class="stat-icon secondary">
+              <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path>
+              </svg>
+            </div>
+            <div class="stat-details">
+              <span class="stat-label">Active Categories</span>
+              <span id="stat-active-categories" class="stat-value">0</span>
+            </div>
+          </div>
+
+          <div class="glass-panel stat-card">
+            <div class="stat-icon">
+              <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+              </svg>
+            </div>
+            <div class="stat-details">
+              <span class="stat-label">Best Selling Item</span>
+              <span id="stat-best-selling" class="stat-value" style="font-size: 1.2rem; font-weight: 600; line-height: 1.6;">None</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Charts & Table Columns -->
+        <div class="analytics-section">
+          
+          <!-- Category Chart -->
+          <div class="glass-panel">
+            <h2>Sales Breakdown by Category</h2>
+            <div id="category-chart-container" class="chart-container">
+              <!-- Dynamically populated chart bars go here -->
+            </div>
+          </div>
+
+          <!-- Detailed Items Table -->
+          <div class="glass-panel">
+            <h2>Tally Details</h2>
+            <div class="summary-table-container">
+              <table class="summary-table">
+                <thead>
+                  <tr>
+                    <th>Item Name</th>
+                    <th>Category</th>
+                    <th style="text-align: right;">Quantity Sold</th>
+                  </tr>
+                </thead>
+                <tbody id="summary-table-body">
+                  <!-- Dynamically populated rows go here -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
