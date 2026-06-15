@@ -3,14 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AeroCount // Premium Sold Item Tracker</title>
+  <title>StockForSmo</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body class="theme-dark">
 
   <div class="app-container">
     
-    <!-- GLOBAL HEADER & CONTROLS -->
     <header>
       <div class="logo-section">
         <h1>AeroCount</h1>
@@ -18,7 +17,7 @@
       </div>
       
       <div class="header-controls">
-        <!-- Theme Switcher -->
+
         <div class="theme-switcher">
           <span class="theme-switcher-label">Theme</span>
           <button class="theme-btn theme-btn-dark active" data-theme="dark" title="Dark Theme"></button>
@@ -26,7 +25,7 @@
           <button class="theme-btn theme-btn-pink" data-theme="pink" title="Pink Theme"></button>
         </div>
         
-        <!-- Navigation Tabs -->
+
         <nav class="nav-tabs">
           <button id="tab-counter" class="tab-btn active">Counter</button>
           <button id="tab-stock" class="tab-btn">Stock Sheet</button>
@@ -35,11 +34,11 @@
       </div>
     </header>
 
-    <!-- 1. COUNTER VIEW (DEFAULT) -->
+
     <div id="counter-view" class="view-section">
       <div class="dashboard-grid">
         
-        <!-- Left Panel: Input Form -->
+
         <div class="left-panel">
           <div class="glass-panel">
             <h2>Add Item</h2>
@@ -62,7 +61,7 @@
                 </select>
               </div>
 
-              <!-- Custom Category Text Input (appears when 'Other' is selected) -->
+  
               <div id="custom-category-group" class="form-group custom-category-group hidden">
                 <label for="custom-category-input">Custom Category Name</label>
                 <input type="text" id="custom-category-input" class="form-input" placeholder="e.g. Footwear">
@@ -78,7 +77,7 @@
           </div>
         </div>
 
-        <!-- Right Panel: Counters Grid & Activity Log -->
+
         <div class="right-panel">
           <div class="glass-panel" style="flex: 1; display: flex; flex-direction: column;">
             <div class="items-section-header">
@@ -87,18 +86,17 @@
             </div>
             
             <div id="items-grid" class="items-grid">
-              <!-- Dynamically populated item cards go here -->
+
             </div>
           </div>
 
-          <!-- Activity Log Panel -->
           <div class="glass-panel log-panel">
             <div class="log-header">
               <h2>Activity Log</h2>
               <button id="clear-logs-btn" class="log-clear-btn">Clear Logs</button>
             </div>
             <ul id="log-list" class="log-list">
-              <!-- Dynamically populated logs go here -->
+
             </ul>
           </div>
         </div>
@@ -107,7 +105,6 @@
     </div>
 
 
-    <!-- 2. STOCK COUNTING SHEET VIEW -->
     <div id="stock-view" class="view-section hidden">
       <div class="stock-sheet-container">
         <div class="glass-panel">
@@ -135,7 +132,7 @@
                 </tr>
               </thead>
               <tbody id="stock-table-body">
-                <!-- Dynamically populated stock entries go here -->
+
               </tbody>
             </table>
           </div>
@@ -144,7 +141,7 @@
     </div>
 
 
-    <!-- 3. FINAL RESULTS SUMMARY VIEW -->
+
     <div id="summary-view" class="view-section hidden">
       <div class="summary-container">
         
@@ -166,7 +163,7 @@
           </div>
         </div>
 
-        <!-- Metrics Dashboard -->
+
         <div class="stats-cards-grid">
           <div class="glass-panel stat-card">
             <div class="stat-icon success">
@@ -205,18 +202,17 @@
           </div>
         </div>
 
-        <!-- Charts & Table Columns -->
+
         <div class="analytics-section">
           
-          <!-- Category Chart -->
+
           <div class="glass-panel">
             <h2>Sales Breakdown by Category</h2>
             <div id="category-chart-container" class="chart-container">
-              <!-- Dynamically populated chart bars go here -->
+
             </div>
           </div>
 
-          <!-- Detailed Items Table -->
           <div class="glass-panel">
             <h2>Tally Details</h2>
             <div class="summary-table-container">
@@ -229,7 +225,7 @@
                   </tr>
                 </thead>
                 <tbody id="summary-table-body">
-                  <!-- Dynamically populated rows go here -->
+
                 </tbody>
               </table>
             </div>
