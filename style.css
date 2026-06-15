@@ -13,11 +13,6 @@
   --shadow-md: 0 12px 20px -8px rgba(0, 0, 0, 0.7);
 }
 
-/* ==========================================================================
-   THEMES DEFINITION
-   ========================================================================== */
-
-/* Theme 1: Premium Dark Slate (Default) */
 body.theme-dark {
   --bg-app: #080a10;
   --bg-panel: rgba(13, 18, 30, 0.75);
@@ -31,15 +26,15 @@ body.theme-dark {
   --text-secondary: #94a3b8;
   --text-muted: #64748b;
   
-  --color-primary: #6366f1; /* Indigo */
+  --color-primary: #6366f1; 
   --color-primary-glow: rgba(99, 102, 241, 0.15);
-  --color-secondary: #0ea5e9; /* Teal */
+  --color-secondary: #0ea5e9;
   --color-secondary-glow: rgba(14, 165, 233, 0.15);
-  --color-success: #10b981; /* Emerald */
-  --color-danger: #f43f5e; /* Rose */
+  --color-success: #10b981; 
+  --color-danger: #f43f5e;
 }
 
-/* Theme 2: Minimalist High-Contrast Black & White (Light Theme) */
+
 body.theme-bw {
   --bg-app: #f8fafc;
   --bg-panel: #ffffff;
@@ -61,29 +56,29 @@ body.theme-bw {
   --color-danger: #dc2626;
 }
 
-/* Theme 3: Playful Pink (Pastel Cream & Pink/Magenta) */
+
 body.theme-pink {
-  --bg-app: #fff1f2; /* soft rose tint */
+  --bg-app: #fff1f2; 
   --bg-panel: rgba(255, 255, 255, 0.85);
   --bg-card: rgba(255, 255, 255, 0.9);
   --bg-input: #fff5f7;
   
-  --border-color: #fecdd3; /* pink border */
-  --border-hover: #db2777; /* hot pink hover */
+  --border-color: #fecdd3; 
+  --border-hover: #db2777; 
   
-  --text-primary: #4c0519; /* dark rose */
+  --text-primary: #4c0519;
   --text-secondary: #881337;
   --text-muted: #fda4af;
   
-  --color-primary: #db2777; /* hot pink */
+  --color-primary: #db2777; 
   --color-primary-glow: rgba(219, 39, 119, 0.1);
-  --color-secondary: #ec4899; /* pink-500 */
+  --color-secondary: #ec4899; 
   --color-secondary-glow: rgba(236, 72, 153, 0.1);
   --color-success: #059669;
   --color-danger: #e11d48;
 }
 
-/* Base resets */
+
 * {
   box-sizing: border-box;
   margin: 0;
@@ -101,7 +96,7 @@ body {
   transition: background-color 0.4s ease, color 0.4s ease;
 }
 
-/* Background Glowing Orbs (Handled dynamically per theme) */
+
 body::before, body::after {
   content: '';
   position: fixed;
@@ -127,7 +122,7 @@ body.theme-dark::after {
 }
 
 body.theme-bw::before, body.theme-bw::after {
-  display: none; /* Disable glowing colors in clean B&W mode */
+  display: none; 
 }
 
 body.theme-pink::before {
@@ -141,7 +136,7 @@ body.theme-pink::after {
   background: #fda4af;
 }
 
-/* Main Container */
+
 .app-container {
   max-width: 1400px;
   margin: 0 auto;
@@ -152,7 +147,7 @@ body.theme-pink::after {
   gap: 2rem;
 }
 
-/* Header */
+
 header {
   display: flex;
   justify-content: space-between;
@@ -185,7 +180,7 @@ header {
   flex-wrap: wrap;
 }
 
-/* Theme Switcher Styling */
+
 .theme-switcher {
   display: flex;
   gap: 0.5rem;
@@ -237,7 +232,7 @@ header {
   border: 1px solid #db2777;
 }
 
-/* Navigation Tabs */
+
 .nav-tabs {
   display: flex;
   background: var(--bg-input);
@@ -279,7 +274,7 @@ body.theme-bw .tab-btn.active {
   box-shadow: none;
 }
 
-/* Glass Buttons */
+
 .btn {
   font-family: var(--font-sans);
   font-size: 0.95rem;
@@ -346,7 +341,7 @@ body.theme-bw .btn-secondary {
   border-color: var(--color-secondary);
 }
 
-/* Page Layouts (Counter View, Stock Sheet View, Summary View) */
+
 .view-section {
   display: flex;
   flex-direction: column;
@@ -358,7 +353,6 @@ body.theme-bw .btn-secondary {
   display: none !important;
 }
 
-/* Main Dashboard Grid */
 .dashboard-grid {
   display: grid;
   grid-template-columns: 350px 1fr;
@@ -371,14 +365,14 @@ body.theme-bw .btn-secondary {
   }
 }
 
-/* Left Panel: Form & Stats */
+
 .left-panel {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
 }
 
-/* Glass Panels */
+
 .glass-panel {
   background: var(--bg-panel);
   border: 1px solid var(--border-color);
@@ -405,7 +399,7 @@ body.theme-bw .glass-panel {
   padding-left: 0.75rem;
 }
 
-/* Add Item Form */
+
 .form-group {
   display: flex;
   flex-direction: column;
@@ -448,13 +442,13 @@ select.form-input {
   padding-right: 2.5rem;
 }
 
-/* Custom Category Text Input */
+
 .custom-category-group {
   margin-top: 0.5rem;
   animation: fadeIn 0.3s ease-out;
 }
 
-/* Right Panel: Counter Grid + Logs */
+
 .right-panel {
   display: flex;
   flex-direction: column;
@@ -482,7 +476,7 @@ select.form-input {
   color: var(--text-secondary);
 }
 
-/* Items Cards Grid */
+
 .items-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -509,7 +503,7 @@ select.form-input {
   height: 48px;
 }
 
-/* Item Card */
+
 .item-card {
   background: var(--bg-card);
   border: 1px solid var(--border-color);
@@ -580,7 +574,7 @@ select.form-input {
   background: rgba(244, 63, 94, 0.1);
 }
 
-/* Counter Controls */
+
 .counter-interface {
   display: flex;
   align-items: center;
@@ -635,7 +629,7 @@ select.form-input {
   font-feature-settings: "tnum";
 }
 
-/* Activity Log Panel */
+
 .log-panel {
   max-height: 300px;
   display: flex;
@@ -733,9 +727,7 @@ select.form-input {
   color: var(--color-danger);
 }
 
-/* ==========================================================================
-   STOCK SHEET VIEW
-   ========================================================================== */
+
 .stock-sheet-container {
   display: flex;
   flex-direction: column;
@@ -826,9 +818,6 @@ select.form-input {
   font-size: 1.1rem;
 }
 
-/* ==========================================================================
-   SUMMARY VIEW DASHBOARD
-   ========================================================================== */
 .summary-container {
   display: flex;
   flex-direction: column;
@@ -848,7 +837,7 @@ select.form-input {
   gap: 0.75rem;
 }
 
-/* Key Metrics Cards */
+
 .stats-cards-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -901,7 +890,7 @@ select.form-input {
   color: var(--text-primary);
 }
 
-/* Data Analysis Layout (Charts left, Item list right) */
+
 .analytics-section {
   display: grid;
   grid-template-columns: 1.2fr 1fr;
@@ -914,7 +903,7 @@ select.form-input {
   }
 }
 
-/* CSS Dynamic Charts */
+
 .chart-container {
   display: flex;
   flex-direction: column;
@@ -959,7 +948,7 @@ select.form-input {
   transition: width 0.8s cubic-bezier(0.1, 0.8, 0.2, 1);
 }
 
-/* Table Style for Items Summary */
+
 .summary-table-container {
   overflow-x: auto;
   margin-top: 1rem;
@@ -993,9 +982,6 @@ select.form-input {
   border-bottom: none;
 }
 
-/* ==========================================================================
-   ANIMATIONS & KEYFRAMES
-   ========================================================================== */
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -1018,9 +1004,6 @@ select.form-input {
   }
 }
 
-/* ==========================================================================
-   MEDIA PRINT / PDF EXPORT
-   ========================================================================== */
 @media print {
   body {
     background: #ffffff !important;
@@ -1038,7 +1021,7 @@ select.form-input {
     max-width: 100% !important;
   }
 
-  /* Hide tabs, theme-switchers, log-panel, registration form, page headers */
+
   #counter-view, 
   #stock-view, 
   .theme-switcher, 
@@ -1070,7 +1053,7 @@ select.form-input {
     color: #444444 !important;
   }
 
-  /* Expand all panels for print readability */
+
   .glass-panel {
     background: #ffffff !important;
     border: 1px solid #cbd5e1 !important;
@@ -1103,18 +1086,17 @@ select.form-input {
     color: #000000 !important;
   }
 
-  /* Fix Chart Colors for Print */
   .chart-bar-track {
     background: #f1f5f9 !important;
     border: 1px solid #cbd5e1 !important;
   }
 
   .chart-bar-fill {
-    background: #475569 !important; /* solid slate color for ink printers */
-    width: var(--print-width, 100%) !important; /* ensure widths apply */
+    background: #475569 !important; 
+    width: var(--print-width, 100%) !important; 
   }
 
-  /* Fix Tables for Print */
+
   .summary-table {
     width: 100% !important;
   }
