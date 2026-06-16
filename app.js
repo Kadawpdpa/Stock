@@ -296,15 +296,15 @@ function updateStockValue(itemId, field, val, rowEl) {
   
 
   if (oldVal !== val) {
-    const switchLang = {
-      morningBefore =  'ก่อนขายของช่วงเช้า',
-      morningAfter = 'หลังขายของช่วงเช้า',
-      afternoonBefore = 'ก่อนขายของช่วงบ่าย',
-      afternoonAfter = 'หลังขายของช่วงบ่าย'
-    };
-    const cleanFieldName = switchLang[field] || field;
-    addLog('อัพเดทสต็อค ${cleanFieldName} สินค้า ${ item.name} จาก ${oldVal} เป็น ${val}', 'info');
-  }
+  const switchLang = {
+    morningBefore: 'ก่อนขายของช่วงเช้า',
+    morningAfter: 'หลังขายของช่วงเช้า',
+    afternoonBefore: 'ก่อนขายของช่วงบ่าย',
+    afternoonAfter: 'หลังขายของช่วงบ่าย'
+  };
+  const cleanFieldName = switchLang[field] || field;
+  addLog(`อัพเดทสต็อค ${cleanFieldName} สินค้า ${item.name} จาก ${oldVal} เป็น ${val}`, 'info');
+}
 }
 
 
