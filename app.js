@@ -332,7 +332,7 @@ function adjustCount(itemId, delta) {
   storage.save();
   
   const changeType = delta > 0 ? 'increment' : 'decrement';
-  const actionPhrase = delta > 0 ? 'Increased' : 'Decreased';
+  const actionPhrase = delta > 0 ? 'เพิ่มจำนวนสินค้า' : 'ลดจำนวนสินค้า';
   addLog(`${actionPhrase} <strong>${item.name}</strong> จำนวนยอดขาย (${oldCount} &rarr; ${item.count})`, changeType);
 }
 
@@ -534,7 +534,7 @@ el.addItemForm.addEventListener('submit', (e) => {
   if (category === 'Other') {
     category = el.customCategoryInput.value.trim();
     if (!category) {
-      alert('Please enter a custom category name.');
+      alert('กรุณากรอกชื่อหมวดหมู่');
       return;
     }
   }
