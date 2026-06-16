@@ -296,8 +296,14 @@ function updateStockValue(itemId, field, val, rowEl) {
   
 
   if (oldVal !== val) {
-    const cleanFieldName = field.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
-    addLog(`อัพเดทสต็อค **${cleanFieldName}** สำหรับ **${item.name}** ไป **${val}** (ข้อมูลจำนวนยอดขายได้ทำการซิงก์ไปยัง **${newTotalCount}**)`, 'ข้อมูล');
+    const switchLang = {
+      morningBefore =  'ก่อนขายของช่วงเช้า',
+      morningAfter = 'หลังขายของช่วงเช้า',
+      afternoonBefore = 'ก่อนขายของช่วงบ่าย',
+      afternoonAfter = 'หลังขายของช่วงบ่าย'
+    };
+    const cleanFieldName = switchLang[field] || field;
+    addLog('อัพเดทสต็อค ${cleanFieldName} สินค้า ${ item.name} จาก ${oldVal} เป็น ${val}', 'info');
   }
 }
 
@@ -458,7 +464,7 @@ function updateSummaryDashboard() {
   if (state.items.length === 0) {
     el.summaryTableBody.innerHTML = `
       <tr>
-        <td colspan="3" style="text-align: center; color: var(--text-muted); padding: 2rem;">No items registered.</td>
+        <td colspan="3" style="text-align: center; color: var(--text-muted); padding: 2rem;">ไม่มีสินค้าในขณะนี้</td>
       </tr>
     `;
   } else {
