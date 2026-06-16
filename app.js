@@ -127,7 +127,7 @@ function renderItems() {
     return;
   }
   
-  el.itemsCountBadge.textContent = `${state.items.length} item${state.items.length === 1 ? '' : 's'}`;
+  el.itemsCountBadge.textContent = `${state.items.length} ชิ้น${state.items.length === 1 ? '' : 's'}`;
   
   state.items.forEach(item => {
     const card = document.createElement('div');
