@@ -26,9 +26,8 @@ const el = {
 
   addItemForm: document.getElementById('add-item-form'),
   itemNameInput: document.getElementById('item-name'),
-  categorySelect: document.getElementById('item-category-select'),
-  customCategoryGroup: document.getElementById('custom-category-group'),
-  customCategoryInput: document.getElementById('custom-category-input'),
+  categoryInput: document.getElementById('item-category-input'),
+  categoryDatalist: document.getElementById('category-datalist'),
   
 
   itemsGrid: document.getElementById('items-grid'),
@@ -45,7 +44,7 @@ const el = {
   
 
   categoryChartContainer: document.getElementById('category-chart-container'),
-  summaryTableBody: document.getElementById('summary-table-body'),
+  summaryBlocksContainer: document.getElementById('summary-blocks-container'),
   exportPdfBtn: document.getElementById('export-pdf-btn')
 };
 
@@ -180,6 +179,25 @@ function renderLogs() {
       <span class="log-time">${log.timestamp}</span>
     `;
     el.logList.appendChild(item);
+  });
+}
+
+function getUniqueCategories() {
+  const categories = new Set(['Clothing', 'Electronics', 'Accessories', 'Home & Living', 'Books']);
+  state.items.forEach(item => {
+    if (item.category) {
+      categories.add(item.category);
+    }
+  });
+  return Array.from(categories);
+}
+
+function renderCategoryDatalist() {
+  el.categoryDatalist.innerHTML = '';
+  getUniqueCategories().forEach(category => {
+    const option = document.createElement('option');
+    option.value = category;
+    el.categoryDatalist.appendChild(option);
   });
 }
 
@@ -535,26 +553,62 @@ function updateSummaryDashboard() {
   }
   
 
-  el.summaryTableBody.innerHTML = '';
+  el.summaryBlocksContainer.innerHTML = '';
   
   if (state.items.length === 0) {
-    el.summaryTableBody.innerHTML = `
-      <tr>
-        <td colspan="4" style="text-align: center; color: var(--text-muted); padding: 2rem;">No items registered.</td>
-      </tr>
+    el.summaryBlocksContainer.innerHTML = `
+      <div class="empty-state" style="grid-column: 1 / -1;">
+        <p>No items registered.</p>
+      </div>
     `;
   } else {
-    const sortedItems = [...state.items].sort((a, b) => b.count - a.count);
+    const itemsByCategory = {};
+    state.items.forEach(item => {
+      if (!itemsByCategory[item.category]) {
+        itemsByCategory[item.category] = [];
+      }
+      itemsByCategory[item.category].push(item);
+    });
     
-    sortedItems.forEach(item => {
-      const row = document.createElement('tr');
-      row.innerHTML = `
-        <td><strong>${escapeHTML(item.name)}</strong></td>
-        <td><span class="item-category">${escapeHTML(item.category)}</span></td>
-        <td style="text-align: right; font-weight: 600; font-feature-settings: 'tnum';">${item.stockWithdrawal}</td>
-        <td style="text-align: right; font-weight: 600; font-feature-settings: 'tnum';">${item.count}</td>
+    Object.entries(itemsByCategory).forEach(([categoryName, categoryItems]) => {
+      let categorySold = 0;
+      categoryItems.forEach(item => {
+        categorySold += item.count;
+      });
+      
+      const block = document.createElement('div');
+      block.className = 'glass-panel category-block-card';
+      
+      let rowsHtml = '';
+      categoryItems.sort((a, b) => b.count - a.count).forEach(item => {
+        rowsHtml += `
+          <tr>
+            <td style="padding: 0.5rem 0;"><strong>${escapeHTML(item.name)}</strong></td>
+            <td style="text-align: right; padding: 0.5rem 0; font-feature-settings: 'tnum';">${item.stockWithdrawal}</td>
+            <td style="text-align: right; padding: 0.5rem 0; font-weight: 600; font-feature-settings: 'tnum';">${item.count}</td>
+          </tr>
+        `;
+      });
+      
+      block.innerHTML = `
+        <div class="category-block-header">
+          <span class="category-block-title">${escapeHTML(categoryName)}</span>
+          <span class="category-block-badge">${categorySold} ขายแล้ว</span>
+        </div>
+        <table class="summary-table" style="font-size: 0.9rem; margin-top: 0; width: 100%;">
+          <thead>
+            <tr>
+              <th style="padding: 0.25rem 0; background: none; font-size: 0.8rem;">สินค้า</th>
+              <th style="text-align: right; padding: 0.25rem 0; background: none; font-size: 0.8rem;">เบิกสต็อก</th>
+              <th style="text-align: right; padding: 0.25rem 0; background: none; font-size: 0.8rem;">ขายได้</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${rowsHtml}
+          </tbody>
+        </table>
       `;
-      el.summaryTableBody.appendChild(row);
+      el.summaryBlocksContainer.appendChild(block);
     });
   }
 }
@@ -598,37 +652,17 @@ function applyTheme(themeName) {
 }
 
 
-el.categorySelect.addEventListener('change', (e) => {
-  if (e.target.value === 'Other') {
-    el.customCategoryGroup.classList.remove('hidden');
-    el.customCategoryInput.setAttribute('required', 'true');
-    el.customCategoryInput.focus();
-  } else {
-    el.customCategoryGroup.classList.add('hidden');
-    el.customCategoryInput.removeAttribute('required');
-  }
-});
-
 el.addItemForm.addEventListener('submit', (e) => {
   e.preventDefault();
   
   const name = el.itemNameInput.value.trim();
-  let category = el.categorySelect.value;
-  
-  if (category === 'Other') {
-    category = el.customCategoryInput.value.trim();
-    if (!category) {
-      alert('Please enter a custom category name.');
-      return;
-    }
-  }
+  const category = el.categoryInput.value.trim();
   
   if (name && category) {
     const success = addItem(name, category);
     if (success) {
       el.addItemForm.reset();
-      el.customCategoryGroup.classList.add('hidden');
-      el.customCategoryInput.removeAttribute('required');
+      renderCategoryDatalist();
     }
   }
 });
@@ -670,8 +704,7 @@ el.exportPdfBtn.addEventListener('click', () => {
 function init() {
   storage.load();
   applyTheme(state.theme);
-  
-
+  renderCategoryDatalist();
   showView('counter');
   renderLogs();
 }
