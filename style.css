@@ -28,10 +28,10 @@ body.theme-dark {
   
   --color-primary: #6366f1; 
   --color-primary-glow: rgba(99, 102, 241, 0.15);
-  --color-secondary: #0ea5e9;
+  --color-secondary: #0ea5e9; 
   --color-secondary-glow: rgba(14, 165, 233, 0.15);
   --color-success: #10b981; 
-  --color-danger: #f43f5e;
+  --color-danger: #f43f5e; 
 }
 
 
@@ -66,7 +66,7 @@ body.theme-pink {
   --border-color: #fecdd3; 
   --border-hover: #db2777; 
   
-  --text-primary: #4c0519;
+  --text-primary: #4c0519; 
   --text-secondary: #881337;
   --text-muted: #fda4af;
   
@@ -352,6 +352,7 @@ body.theme-bw .btn-secondary {
 .hidden {
   display: none !important;
 }
+
 
 .dashboard-grid {
   display: grid;
@@ -982,6 +983,7 @@ select.form-input {
   border-bottom: none;
 }
 
+
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -1003,6 +1005,7 @@ select.form-input {
     transform: translateX(0);
   }
 }
+
 
 @media print {
   body {
@@ -1085,6 +1088,7 @@ select.form-input {
   .stat-value {
     color: #000000 !important;
   }
+
 
   .chart-bar-track {
     background: #f1f5f9 !important;
