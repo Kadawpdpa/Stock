@@ -1116,3 +1116,45 @@ select.form-input {
     border-bottom: 1px solid #e2e8f0 !important;
   }
 }
+
+.summary-blocks-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.category-block-card {
+  margin-bottom: 0;
+}
+
+.category-block-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 0.5rem;
+}
+
+.category-block-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--color-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.category-block-badge {
+  font-size: 0.8rem;
+  background: var(--color-primary-glow);
+  color: var(--color-primary);
+  padding: 0.2rem 0.6rem;
+  border-radius: 20px;
+  font-weight: 600;
+}
+
+@media print {
+  .category-block-card {
+    page-break-inside: avoid;
+  }
+}
