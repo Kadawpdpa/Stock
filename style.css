@@ -1034,7 +1034,7 @@ select.form-input {
     display: none !important;
   }
 
-  #summary-view {
+  #summary-view, #summary-view.hidden {
     display: block !important;
     opacity: 1 !important;
     transform: none !important;
