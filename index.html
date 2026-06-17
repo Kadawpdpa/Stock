@@ -50,22 +50,9 @@
               </div>
               
               <div class="form-group">
-                <label for="item-category-select">Category</label>
-                <select id="item-category-select" class="form-input" required>
-                  <option value="" disabled selected>Select a category...</option>
-                  <option value="Clothing">Clothing</option>
-                  <option value="Electronics">Electronics</option>
-                  <option value="Accessories">Accessories</option>
-                  <option value="Home & Living">Home & Living</option>
-                  <option value="Books">Books</option>
-                  <option value="Other">Other (Create custom...)</option>
-                </select>
-              </div>
-
-
-              <div id="custom-category-group" class="form-group custom-category-group hidden">
-                <label for="custom-category-input">Custom Category Name</label>
-                <input type="text" id="custom-category-input" class="form-input" placeholder="e.g. Footwear">
+                <label for="item-category-input">Category</label>
+                <input type="text" id="item-category-input" list="category-datalist" class="form-input" placeholder="e.g. Clothing, Electronics..." required>
+                <datalist id="category-datalist"></datalist>
               </div>
 
               <button type="submit" class="btn" style="width: 100%; margin-top: 0.5rem; background: rgba(99, 102, 241, 0.15); color: var(--color-primary); border-color: rgba(99, 102, 241, 0.25);">
@@ -230,24 +217,7 @@
           </div>
 
 
-          <div class="glass-panel">
-            <h2>Tally Details</h2>
-            <div class="summary-table-container">
-              <table class="summary-table">
-                <thead>
-                  <tr>
-                    <th>Item Name</th>
-                    <th>Category</th>
-                    <th style="text-align: right;">เบิกจากสต็อก</th>
-                    <th style="text-align: right;">Quantity Sold</th>
-                  </tr>
-                </thead>
-                <tbody id="summary-table-body">
-
-                </tbody>
-              </table>
-            </div>
-          </div>
+          <div id="summary-blocks-container" class="summary-blocks-container"></div>
 
         </div>
 
