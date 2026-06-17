@@ -64,11 +64,11 @@ const storage = {
         
 
         state.items.forEach(item => {
-          if (item.stockWithdrawal === undefined) item.stockWithdrawal = 0;
-          if (item.morningBefore === undefined) item.morningBefore = 0;
-          if (item.morningAfter === undefined) item.morningAfter = 0;
-          if (item.afternoonBefore === undefined) item.afternoonBefore = 0;
-          if (item.afternoonAfter === undefined) item.afternoonAfter = 0;
+          if (item.morningStock === undefined) item.morningStock = item.morningBefore || 0;
+          if (item.morningWithdrawal === undefined) item.morningWithdrawal = (item.morningBefore !== undefined && item.morningAfter !== undefined) ? Math.max(0, item.morningBefore - item.morningAfter) : 0;
+          if (item.afternoonStock === undefined) item.afternoonStock = item.afternoonBefore || 0;
+          if (item.afternoonWithdrawal === undefined) item.afternoonWithdrawal = (item.afternoonBefore !== undefined && item.afternoonAfter !== undefined) ? Math.max(0, item.afternoonBefore - item.afternoonAfter) : 0;
+          item.stockWithdrawal = item.morningWithdrawal + item.afternoonWithdrawal;
         });
       } catch (e) {
         console.error('Failed to parse saved state:', e);
@@ -121,14 +121,14 @@ function renderItems() {
         <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
           <path stroke-linecap="round" stroke-linejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5m8.25 3v6.75m0 0l-3-3m3 3l3-3M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z"></path>
         </svg>
-        <p>No items registered yet. Use the form on the left to add items to your counter sheet.</p>
+        <p>ยังไม่มีสินค้าที่ลงทะเบียนไว้ ใช้ฟอร์มด้านซ้ายเพื่อเพิ่มสินค้าลงในทะเบียน</p>
       </div>
     `;
     el.itemsCountBadge.textContent = '0 items';
     return;
   }
   
-  el.itemsCountBadge.textContent = `${state.items.length} item${state.items.length === 1 ? '' : 's'}`;
+  el.itemsCountBadge.textContent = `${state.items.length} ชิ้น${state.items.length === 1 ? '' : 's'}`;
   
   state.items.forEach(item => {
     const card = document.createElement('div');
@@ -165,7 +165,7 @@ function renderLogs() {
   if (state.logs.length === 0) {
     el.logList.innerHTML = `
       <li class="log-item" style="justify-content: center; color: var(--text-muted); border-left: none;">
-        No activity logged yet.
+        ยังไม่มีกิจกรรมที่บันทึกไว้
       </li>
     `;
     return;
@@ -183,7 +183,7 @@ function renderLogs() {
 }
 
 function getUniqueCategories() {
-  const categories = new Set(['Clothing', 'Electronics', 'Accessories', 'Home & Living', 'Books']);
+  const categories = new Set();
   state.items.forEach(item => {
     if (item.category) {
       categories.add(item.category);
@@ -208,8 +208,8 @@ function renderStockTable() {
   if (state.items.length === 0) {
     el.stockTableBody.innerHTML = `
       <tr>
-        <td colspan="9" style="text-align: center; color: var(--text-muted); padding: 3rem;">
-          No items registered. Add items under the "Counter" tab to start stock counting.
+        <td colspan="6" style="text-align: center; color: var(--text-muted); padding: 3rem;">
+          ยังไม่มีสินค้าที่ลงทะเบียนไว้ ใช้ฟอร์มด้านซ้ายเพื่อเพิ่มสินค้าลงในทะเบียน
         </td>
       </tr>
     `;
@@ -217,130 +217,40 @@ function renderStockTable() {
   }
   
   state.items.forEach(item => {
-    const morningOut = Math.max(0, item.morningBefore - item.morningAfter);
-    const afternoonOut = Math.max(0, item.afternoonBefore - item.afternoonAfter);
-    const totalOut = morningOut + afternoonOut;
-    
     const tr = document.createElement('tr');
     tr.innerHTML = `
       <td class="item-col section-divider">
         <strong style="display:block;">${escapeHTML(item.name)}</strong>
         <span class="item-category" style="font-size: 0.65rem; margin-top: 0.25rem;">${escapeHTML(item.category)}</span>
       </td>
-      <td class="section-divider">
-        <input type="number" class="stock-input" min="0" data-id="${item.id}" data-field="stockWithdrawal" value="${item.stockWithdrawal}">
-      </td>
       <td>
-        <input type="number" class="stock-input" min="0" data-id="${item.id}" data-field="morningBefore" value="${item.morningBefore}">
-      </td>
-      <td>
-        <input type="number" class="stock-input" min="0" data-id="${item.id}" data-field="morningAfter" value="${item.morningAfter}">
+        <input type="number" class="stock-input" min="0" data-id="${item.id}" data-field="morningStock" value="${item.morningStock}">
       </td>
       <td class="section-divider">
-        <span class="stock-calc-val" id="morning-out-${item.id}">${morningOut}</span>
+        <input type="number" class="stock-input" min="0" data-id="${item.id}" data-field="morningWithdrawal" value="${item.morningWithdrawal}">
       </td>
       <td>
-        <input type="number" class="stock-input" min="0" data-id="${item.id}" data-field="afternoonBefore" value="${item.afternoonBefore}">
-      </td>
-      <td>
-        <input type="number" class="stock-input" min="0" data-id="${item.id}" data-field="afternoonAfter" value="${item.afternoonAfter}">
+        <input type="number" class="stock-input" min="0" data-id="${item.id}" data-field="afternoonStock" value="${item.afternoonStock}">
       </td>
       <td class="section-divider">
-        <span class="stock-calc-val" id="afternoon-out-${item.id}">${afternoonOut}</span>
+        <input type="number" class="stock-input" min="0" data-id="${item.id}" data-field="afternoonWithdrawal" value="${item.afternoonWithdrawal}">
       </td>
       <td>
-        <span class="stock-total-val" id="total-out-${item.id}">${totalOut}</span>
+        <span class="stock-total-val" id="total-withdrawn-${item.id}">${item.stockWithdrawal}</span>
       </td>
     `;
     
-
-    validateStockRow(tr.querySelector('[data-field="morningBefore"]'), tr.querySelector('[data-field="morningAfter"]'));
-    validateStockRow(tr.querySelector('[data-field="afternoonBefore"]'), tr.querySelector('[data-field="afternoonAfter"]'));
-
-
     tr.querySelectorAll('.stock-input').forEach(input => {
-
-      const field = input.getAttribute('data-field');
-      
-      if (field === 'stockWithdrawal') {
-
-        input.addEventListener('change', (e) => {
-          const itemId = e.target.getAttribute('data-id');
-          const val = parseInt(e.target.value) || 0;
-          handleStockWithdrawalChange(itemId, val, e.target, tr);
-        });
-      } else {
-
-        input.addEventListener('input', (e) => {
-          const itemId = e.target.getAttribute('data-id');
-          const fieldName = e.target.getAttribute('data-field');
-          const val = parseInt(e.target.value) || 0;
-          updateStockValue(itemId, fieldName, val, tr);
-        });
-      }
+      input.addEventListener('input', (e) => {
+        const itemId = e.target.getAttribute('data-id');
+        const fieldName = e.target.getAttribute('data-field');
+        const val = parseInt(e.target.value) || 0;
+        updateStockValue(itemId, fieldName, val, tr);
+      });
     });
     
     el.stockTableBody.appendChild(tr);
   });
-}
-
-
-function handleStockWithdrawalChange(itemId, val, inputEl, rowEl) {
-  const item = state.items.find(i => i.id === itemId);
-  if (!item) return;
-  
-  const oldVal = item.stockWithdrawal;
-  if (oldVal === val) return;
-  
-  const confirmed = confirm(`ยืนยันที่จะกรอกจำนวน ${val} ของห้องสต็อกสำหรับสินค้า "${item.name}" ใช่หรือไม่?`);
-  
-  if (confirmed) {
-
-    item.stockWithdrawal = val;
-    
-
-    const oldMorningBefore = item.morningBefore;
-    const oldAfternoonBefore = item.afternoonBefore;
-    
-    item.morningBefore = val;
-    item.afternoonBefore = val;
-    
-
-    rowEl.querySelector('[data-field="morningBefore"]').value = val;
-    rowEl.querySelector('[data-field="afternoonBefore"]').value = val;
-    
-
-    validateStockRow(rowEl.querySelector('[data-field="morningBefore"]'), rowEl.querySelector('[data-field="morningAfter"]'));
-    validateStockRow(rowEl.querySelector('[data-field="afternoonBefore"]'), rowEl.querySelector('[data-field="afternoonAfter"]'));
-    
-    const morningOut = Math.max(0, item.morningBefore - item.morningAfter);
-    const afternoonOut = Math.max(0, item.afternoonBefore - item.afternoonAfter);
-    item.count = morningOut + afternoonOut;
-    
-    rowEl.querySelector(`#morning-out-${itemId}`).textContent = morningOut;
-    rowEl.querySelector(`#afternoon-out-${itemId}`).textContent = afternoonOut;
-    rowEl.querySelector(`#total-out-${itemId}`).textContent = item.count;
-    
-    storage.save();
-    
-    addLog(`ยืนยันเบิกของจากห้องสต็อก **${item.name}** จำนวน **${val}** ชิ้น (ช่วงเช้าและบ่ายตั้งค่าเป็น ${val} อัตโนมัติ)`, 'add-item');
-  } else {
-
-    inputEl.value = oldVal;
-  }
-}
-
-function validateStockRow(beforeInput, afterInput) {
-  const before = parseInt(beforeInput.value) || 0;
-  const after = parseInt(afterInput.value) || 0;
-  
-  if (after > before) {
-    afterInput.classList.add('error');
-    return false;
-  } else {
-    afterInput.classList.remove('error');
-    return true;
-  }
 }
 
 function updateStockValue(itemId, field, val, rowEl) {
@@ -350,49 +260,35 @@ function updateStockValue(itemId, field, val, rowEl) {
   const oldVal = item[field];
   item[field] = val;
   
-
-  if (field === 'morningBefore') {
-    item.afternoonBefore = val;
-    rowEl.querySelector('[data-field="afternoonBefore"]').value = val;
+  if (field === 'morningStock') {
+    item.afternoonStock = val;
+    const afternoonStockInput = rowEl.querySelector('[data-field="afternoonStock"]');
+    if (afternoonStockInput) {
+      afternoonStockInput.value = val;
+    }
   }
   
-
-  const morningBeforeInput = rowEl.querySelector('[data-field="morningBefore"]');
-  const morningAfterInput = rowEl.querySelector('[data-field="morningAfter"]');
-  const afternoonBeforeInput = rowEl.querySelector('[data-field="afternoonBefore"]');
-  const afternoonAfterInput = rowEl.querySelector('[data-field="afternoonAfter"]');
+  item.stockWithdrawal = item.morningWithdrawal + item.afternoonWithdrawal;
   
-
-  validateStockRow(morningBeforeInput, morningAfterInput);
-  validateStockRow(afternoonBeforeInput, afternoonAfterInput);
-  
-
-  const morningOut = Math.max(0, (parseInt(morningBeforeInput.value) || 0) - (parseInt(morningAfterInput.value) || 0));
-  const afternoonOut = Math.max(0, (parseInt(afternoonBeforeInput.value) || 0) - (parseInt(afternoonAfterInput.value) || 0));
-  const newTotalCount = morningOut + afternoonOut;
-  
-  item.count = newTotalCount;
-  
-
-  rowEl.querySelector(`#morning-out-${itemId}`).textContent = morningOut;
-  rowEl.querySelector(`#afternoon-out-${itemId}`).textContent = afternoonOut;
-  rowEl.querySelector(`#total-out-${itemId}`).textContent = newTotalCount;
+  const totalWithdrawnEl = rowEl.querySelector(`#total-withdrawn-${itemId}`);
+  if (totalWithdrawnEl) {
+    totalWithdrawnEl.textContent = item.stockWithdrawal;
+  }
   
   storage.save();
   
-
   if (oldVal !== val) {
     const translations = {
-      morningBefore: 'ช่วงเช้า (ก่อนขาย)',
-      morningAfter: 'ช่วงเช้า (หลังขาย)',
-      afternoonBefore: 'ช่วงบ่าย (ก่อนขาย)',
-      afternoonAfter: 'ช่วงบ่าย (หลังขาย)'
+      morningStock: 'จำนวนของที่มีในห้องสต็อกช่วงเช้า',
+      morningWithdrawal: 'จำนวนของที่เบิกจากห้องสต็อกช่วงเช้า',
+      afternoonStock: 'จำนวนของที่มีในห้องสต็อกช่วงบ่าย',
+      afternoonWithdrawal: 'จำนวนของที่เบิกจากห้องสต็อกช่วงบ่าย'
     };
     const cleanFieldName = translations[field] || field;
     
-    let logMsg = `อัพเดทสต๊อก **${cleanFieldName}** สินค้า **${item.name}** จาก **${oldVal}** เป็น **${val}**`;
-    if (field === 'morningBefore') {
-      logMsg += ` (ปรับช่วงบ่ายก่อนขายเป็น **${val}** อัตโนมัติ)`;
+    let logMsg = `อัพเดท ${cleanFieldName} ${item.name} จาก ${oldVal} เป็น ${val}`;
+    if (field === 'morningStock') {
+      logMsg += ` (ปรับจำนวนมีในห้องสต็อกช่วงบ่ายเป็น ${val} อัตโนมัติ)`;
     }
     
     addLog(logMsg, 'info');
@@ -409,16 +305,6 @@ function adjustCount(itemId, delta) {
   
   item.count += delta;
   
-
-  if (item.morningBefore || item.afternoonBefore) {
-    if (delta > 0) {
-      if (item.afternoonAfter > 0) item.afternoonAfter = Math.max(0, item.afternoonAfter - 1);
-      else if (item.morningAfter > 0) item.morningAfter = Math.max(0, item.morningAfter - 1);
-    } else {
-      if (item.afternoonBefore > item.afternoonAfter) item.afternoonAfter++;
-      else if (item.morningBefore > item.morningAfter) item.morningAfter++;
-    }
-  }
   
   const countEl = document.getElementById(`count-${itemId}`);
   if (countEl) {
@@ -428,7 +314,7 @@ function adjustCount(itemId, delta) {
   storage.save();
   
   const changeType = delta > 0 ? 'increment' : 'decrement';
-  const actionPhrase = delta > 0 ? 'Increased' : 'Decreased';
+  const actionPhrase = delta > 0 ? 'เพิ่มจำนวน' : 'ลดจำนวน';
   addLog(`${actionPhrase} <strong>${item.name}</strong> sold count (${oldCount} &rarr; ${item.count})`, changeType);
 }
 
@@ -439,7 +325,7 @@ function addItem(name, category) {
   );
   
   if (isDuplicate) {
-    alert(`Item "${name}" already exists in the "${category}" category.`);
+    alert(`"${name}" หมวดหมู่ "${category}" ถูกลงทะเบียนไว้แล้ว.`);
     return false;
   }
   
@@ -448,18 +334,18 @@ function addItem(name, category) {
     name,
     category,
     count: 0,
-    stockWithdrawal: 0,
-    morningBefore: 0,
-    morningAfter: 0,
-    afternoonBefore: 0,
-    afternoonAfter: 0
+    morningStock: 0,
+    morningWithdrawal: 0,
+    afternoonStock: 0,
+    afternoonWithdrawal: 0,
+    stockWithdrawal: 0
   };
   
   state.items.push(newItem);
   storage.save();
   renderItems();
   
-  addLog(`Registered new item <strong>${name}</strong> under <strong>${category}</strong>`, 'add-item');
+  addLog(`ลงทะเบียน <strong>${name}</strong> หมวดหมู่ <strong>${category}</strong>`, 'เพิ่มสินค้า');
   return true;
 }
 
@@ -468,21 +354,21 @@ function removeItem(itemId) {
   const item = state.items.find(i => i.id === itemId);
   if (!item) return;
   
-  if (confirm(`Are you sure you want to remove "${item.name}"? This will delete all its data and counts.`)) {
+  if (confirm(`คุณต้องการลบ "${item.name}" ใช่หรือไม่? การกระทำนี้ไม่สามารถย้อนกลับได้`)) {
     state.items = state.items.filter(i => i.id !== itemId);
     storage.save();
     renderItems();
-    addLog(`Deleted item <strong>${item.name}</strong> from catalog`, 'delete-item');
+    addLog(`ลบสินค้า <strong>${item.name}</strong> จากทะเบียน`, 'ลบสินค้า');
   }
 }
 
 
 function clearLogs() {
-  if (confirm('Are you sure you want to clear all history logs?')) {
+  if (confirm('คุณแน่ใจหรือไม่ที่จะล้างประวัติการทำรายการทั้งหมด?')) {
     state.logs = [];
     storage.save();
     renderLogs();
-    addLog('Activity logs cleared', 'clear');
+    addLog('ประวัติการทำรายการถูกล้างแล้ว', 'clear');
   }
 }
 
@@ -514,9 +400,9 @@ function updateSummaryDashboard() {
   el.statActiveCategories.textContent = categories.size;
   
   if (bestSellingItem && maxCount > 0) {
-    el.statBestSelling.innerHTML = `<strong>${escapeHTML(bestSellingItem.name)}</strong> (${maxCount} sold)`;
+    el.statBestSelling.innerHTML = `<strong>${escapeHTML(bestSellingItem.name)}</strong> (${maxCount} ขายแล้ว)`;
   } else {
-    el.statBestSelling.textContent = 'None';
+    el.statBestSelling.textContent = 'ไม่มี';
   }
   
 
@@ -581,10 +467,12 @@ function updateSummaryDashboard() {
       
       let rowsHtml = '';
       categoryItems.sort((a, b) => b.count - a.count).forEach(item => {
+        const remainingInStock = Math.max(0, item.afternoonStock - item.afternoonWithdrawal);
         rowsHtml += `
           <tr>
             <td style="padding: 0.5rem 0;"><strong>${escapeHTML(item.name)}</strong></td>
             <td style="text-align: right; padding: 0.5rem 0; font-feature-settings: 'tnum';">${item.stockWithdrawal}</td>
+            <td style="text-align: right; padding: 0.5rem 0; font-feature-settings: 'tnum';">${remainingInStock}</td>
             <td style="text-align: right; padding: 0.5rem 0; font-weight: 600; font-feature-settings: 'tnum';">${item.count}</td>
           </tr>
         `;
@@ -599,7 +487,8 @@ function updateSummaryDashboard() {
           <thead>
             <tr>
               <th style="padding: 0.25rem 0; background: none; font-size: 0.8rem;">สินค้า</th>
-              <th style="text-align: right; padding: 0.25rem 0; background: none; font-size: 0.8rem;">เบิกสต็อก</th>
+              <th style="text-align: right; padding: 0.25rem 0; background: none; font-size: 0.8rem;">เบิกจากห้องสต็อก</th>
+              <th style="text-align: right; padding: 0.25rem 0; background: none; font-size: 0.8rem;">เหลือในห้องสต็อก</th>
               <th style="text-align: right; padding: 0.25rem 0; background: none; font-size: 0.8rem;">ขายได้</th>
             </tr>
           </thead>
@@ -697,7 +586,15 @@ el.themeBtns.forEach(btn => {
 
 
 el.exportPdfBtn.addEventListener('click', () => {
-  window.print();
+  try {
+    window.print();
+  } catch (e) {
+    alert('ไม่สามารถเปิดหน้าต่างพิมพ์ได้เนื่องจากข้อจำกัดของเบราว์เซอร์ กรุณากดปุ่ม Ctrl + P (หรือ Cmd + P บน Mac) เพื่อบันทึกเป็น PDF แทน');
+  }
+});
+
+window.addEventListener('beforeprint', () => {
+  updateSummaryDashboard();
 });
 
 
