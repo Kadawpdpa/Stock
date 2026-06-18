@@ -69,7 +69,15 @@
           <div class="glass-panel" style="flex: 1; display: flex; flex-direction: column;">
             <div class="items-section-header">
               <h2>ตัวนับสินค้า</h2>
-              <span id="items-count-badge" class="count-badge">0 ชิ้น</span>
+              <div style="display: flex; gap: 0.75rem; align-items: center;">
+                <button id="reset-counts-btn" class="btn" style="background: rgba(244, 63, 94, 0.08); color: var(--color-danger); border-color: rgba(244, 63, 94, 0.2); padding: 0.4rem 0.8rem; font-size: 0.85rem; height: 32px;">
+                  <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 1121.21 8H18"></path>
+                  </svg>
+                  รีเซ็ตยอดทั้งหมด
+                </button>
+                <span id="items-count-badge" class="count-badge">0 ชิ้น</span>
+              </div>
             </div>
             
             <div id="items-grid" class="items-grid">
@@ -153,11 +161,6 @@
 
         <div class="stats-cards-grid">
           <div class="glass-panel stat-card">
-            <div class="stat-icon success">
-              <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
-              </svg>
-            </div>
             <div class="stat-details">
               <span class="stat-label">ยอดขายรวม</span>
               <span id="stat-total-sold" class="stat-value">0</span>
@@ -165,11 +168,6 @@
           </div>
 
           <div class="glass-panel stat-card">
-            <div class="stat-icon secondary">
-              <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
-              </svg>
-            </div>
             <div class="stat-details">
               <span class="stat-label">รวมเบิกจากห้องสต็อก</span>
               <span id="stat-total-withdrawn" class="stat-value">0</span>
@@ -177,11 +175,6 @@
           </div>
 
           <div class="glass-panel stat-card">
-            <div class="stat-icon secondary">
-              <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path>
-              </svg>
-            </div>
             <div class="stat-details">
               <span class="stat-label">หมวดหมู่ที่ใช้งาน</span>
               <span id="stat-active-categories" class="stat-value">0</span>
@@ -189,11 +182,6 @@
           </div>
 
           <div class="glass-panel stat-card">
-            <div class="stat-icon">
-              <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
-              </svg>
-            </div>
             <div class="stat-details">
               <span class="stat-label">สินค้าขายดีที่สุด</span>
               <span id="stat-best-selling" class="stat-value" style="font-size: 1.2rem; font-weight: 600; line-height: 1.6;">ไม่มี</span>
