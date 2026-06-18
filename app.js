@@ -45,7 +45,8 @@ const el = {
 
   categoryChartContainer: document.getElementById('category-chart-container'),
   summaryBlocksContainer: document.getElementById('summary-blocks-container'),
-  exportPdfBtn: document.getElementById('export-pdf-btn')
+  exportPdfBtn: document.getElementById('export-pdf-btn'),
+  resetCountsBtn: document.getElementById('reset-counts-btn')
 };
 
 
@@ -595,6 +596,22 @@ el.exportPdfBtn.addEventListener('click', () => {
 
 window.addEventListener('beforeprint', () => {
   updateSummaryDashboard();
+});
+
+el.resetCountsBtn.addEventListener('click', () => {
+  if (confirm('คุณต้องการรีเซ็ตยอดขายและยอดเบิกทั้งหมดใช่หรือไม่? (รายชื่อสินค้าทั้งหมดจะยังคงอยู่)')) {
+    state.items.forEach(item => {
+      item.count = 0;
+      item.morningStock = 0;
+      item.morningWithdrawal = 0;
+      item.afternoonStock = 0;
+      item.afternoonWithdrawal = 0;
+      item.stockWithdrawal = 0;
+    });
+    storage.save();
+    renderItems();
+    addLog('รีเซ็ตยอดขายและยอดเบิกสต็อกทั้งหมดเป็น 0', 'clear');
+  }
 });
 
 
