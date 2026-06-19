@@ -105,6 +105,32 @@
     <div id="stock-view" class="view-section hidden">
       <div class="stock-sheet-container">
         <div class="glass-panel">
+          <h2>เบิกของด่วนจากห้องสต็อก</h2>
+          <form id="quick-withdraw-form" autocomplete="off" style="display: flex; gap: 1rem; flex-wrap: wrap; margin-top: 1rem; align-items: flex-end;">
+            <div class="form-group" style="margin-bottom: 0; flex: 1; min-width: 150px;">
+              <label for="withdraw-category">หมวดหมู่</label>
+              <select id="withdraw-category" class="form-input" style="width: 100%;">
+                <option value="">ทั้งหมด</option>
+              </select>
+            </div>
+            <div class="form-group" style="margin-bottom: 0; flex: 2; min-width: 200px;">
+              <label for="withdraw-item">เลือกสินค้า</label>
+              <select id="withdraw-item" class="form-input" style="width: 100%;" required>
+                <option value="">-- เลือกสินค้า --</option>
+              </select>
+            </div>
+            <div class="form-group" style="margin-bottom: 0; flex: 1; min-width: 100px;">
+              <label for="withdraw-qty">จำนวนที่เบิก</label>
+              <input type="number" id="withdraw-qty" class="form-input" min="1" placeholder="เช่น 5" style="width: 100%;" required>
+            </div>
+            <div style="display: flex; gap: 0.5rem;">
+              <button type="submit" class="btn btn-primary" style="height: 42px;">ยืนยัน</button>
+              <button type="button" id="withdraw-cancel-btn" class="btn btn-secondary" style="height: 42px;">ยกเลิก</button>
+            </div>
+          </form>
+        </div>
+
+        <div class="glass-panel">
           <h2>จัดการสต็อค</h2>
           <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 1.5rem; margin-top: -0.5rem;">
             หน้าสำหรับจัดการสต็อคสินค้าและบันทึกการเบิกสินค้าในแต่ละช่วงเวลา
@@ -115,14 +141,15 @@
               <thead>
                 <tr>
                   <th rowspan="2">ชื่อสินค้า</th>
-                  <th colspan="2" class="section-divider">ช่วงเช้า</th>
-                  <th colspan="2" class="section-divider">ช่วงบ่าย</th>
-                  <th rowspan="2">รวมเบิกจากห้องสต็อก</th>
+                  <th rowspan="2" class="section-divider">สต็อคที่มีในห้อง</th>
+                  <th class="section-divider">ช่วงเช้า</th>
+                  <th class="section-divider">ช่วงบ่าย</th>
+                  <th rowspan="2" class="section-divider">รวมเบิกจากห้องสต็อก</th>
+                  <th rowspan="2" class="section-divider">สต็อคสุทธิภายในห้อง</th>
+                  <th rowspan="2">สินค้ามีตำหนิ</th>
                 </tr>
                 <tr>
-                  <th>มีในห้องสต็อก</th>
                   <th class="section-divider">เบิกจากห้องสต็อก</th>
-                  <th>มีในห้องสต็อก</th>
                   <th class="section-divider">เบิกจากห้องสต็อก</th>
                 </tr>
               </thead>
