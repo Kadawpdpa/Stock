@@ -70,6 +70,7 @@ const storage = {
           if (item.afternoonStock === undefined) item.afternoonStock = item.afternoonBefore || 0;
           if (item.afternoonWithdrawal === undefined) item.afternoonWithdrawal = (item.afternoonBefore !== undefined && item.afternoonAfter !== undefined) ? Math.max(0, item.afternoonBefore - item.afternoonAfter) : 0;
           item.stockWithdrawal = item.morningWithdrawal + item.afternoonWithdrawal;
+          if (item.defective === undefined) item.defective = 0;
         });
       } catch (e) {
         console.error('Failed to parse saved state:', e);
@@ -129,7 +130,7 @@ function renderItems() {
     return;
   }
   
-  el.itemsCountBadge.textContent = `${state.items.length} ชิ้น${state.items.length === 1 ? '' : 's'}`;
+  el.itemsCountBadge.textContent = `${state.items.length} ชิ้น${state.items.length === 1 ? '' : ''}`;
   
   state.items.forEach(item => {
     const card = document.createElement('div');
@@ -203,13 +204,57 @@ function renderCategoryDatalist() {
 }
 
 
+function populateQuickWithdrawFields() {
+  const categorySelect = document.getElementById('withdraw-category');
+  const itemSelect = document.getElementById('withdraw-item');
+  if (!categorySelect || !itemSelect) return;
+
+  const currentCategory = categorySelect.value;
+  const currentItem = itemSelect.value;
+
+  categorySelect.innerHTML = '<option value="">ทั้งหมด</option>';
+  getUniqueCategories().forEach(cat => {
+    const opt = document.createElement('option');
+    opt.value = cat;
+    opt.textContent = cat;
+    if (cat === currentCategory) opt.selected = true;
+    categorySelect.appendChild(opt);
+  });
+
+  updateQuickWithdrawItems();
+  
+  if (currentItem) {
+    itemSelect.value = currentItem;
+  }
+}
+
+function updateQuickWithdrawItems() {
+  const categorySelect = document.getElementById('withdraw-category');
+  const itemSelect = document.getElementById('withdraw-item');
+  if (!categorySelect || !itemSelect) return;
+
+  const selectedCat = categorySelect.value;
+  
+  itemSelect.innerHTML = '<option value="">-- เลือกสินค้า --</option>';
+  
+  state.items.forEach(item => {
+    if (!selectedCat || item.category === selectedCat) {
+      const opt = document.createElement('option');
+      opt.value = item.id;
+      opt.textContent = `${item.name} (${item.category})`;
+      itemSelect.appendChild(opt);
+    }
+  });
+}
+
 function renderStockTable() {
+  populateQuickWithdrawFields();
   el.stockTableBody.innerHTML = '';
   
   if (state.items.length === 0) {
     el.stockTableBody.innerHTML = `
       <tr>
-        <td colspan="6" style="text-align: center; color: var(--text-muted); padding: 3rem;">
+        <td colspan="7" style="text-align: center; color: var(--text-muted); padding: 3rem;">
           ยังไม่มีสินค้าที่ลงทะเบียนไว้ ใช้ฟอร์มด้านซ้ายเพื่อเพิ่มสินค้าลงในทะเบียน
         </td>
       </tr>
@@ -218,26 +263,30 @@ function renderStockTable() {
   }
   
   state.items.forEach(item => {
+    const netStock = item.morningStock - item.count + item.morningWithdrawal + item.afternoonWithdrawal;
     const tr = document.createElement('tr');
     tr.innerHTML = `
-      <td class="item-col section-divider">
+      <td class="item-col">
         <strong style="display:block;">${escapeHTML(item.name)}</strong>
         <span class="item-category" style="font-size: 0.65rem; margin-top: 0.25rem;">${escapeHTML(item.category)}</span>
       </td>
-      <td>
+      <td class="section-divider">
         <input type="number" class="stock-input" min="0" data-id="${item.id}" data-field="morningStock" value="${item.morningStock}">
       </td>
       <td class="section-divider">
         <input type="number" class="stock-input" min="0" data-id="${item.id}" data-field="morningWithdrawal" value="${item.morningWithdrawal}">
       </td>
-      <td>
-        <input type="number" class="stock-input" min="0" data-id="${item.id}" data-field="afternoonStock" value="${item.afternoonStock}">
-      </td>
       <td class="section-divider">
         <input type="number" class="stock-input" min="0" data-id="${item.id}" data-field="afternoonWithdrawal" value="${item.afternoonWithdrawal}">
       </td>
-      <td>
+      <td class="section-divider">
         <span class="stock-total-val" id="total-withdrawn-${item.id}">${item.stockWithdrawal}</span>
+      </td>
+      <td class="section-divider">
+        <span class="stock-total-val" id="net-stock-${item.id}">${netStock}</span>
+      </td>
+      <td>
+        <input type="number" class="stock-input" min="0" data-id="${item.id}" data-field="defective" value="${item.defective}">
       </td>
     `;
     
@@ -261,14 +310,6 @@ function updateStockValue(itemId, field, val, rowEl) {
   const oldVal = item[field];
   item[field] = val;
   
-  if (field === 'morningStock') {
-    item.afternoonStock = val;
-    const afternoonStockInput = rowEl.querySelector('[data-field="afternoonStock"]');
-    if (afternoonStockInput) {
-      afternoonStockInput.value = val;
-    }
-  }
-  
   item.stockWithdrawal = item.morningWithdrawal + item.afternoonWithdrawal;
   
   const totalWithdrawnEl = rowEl.querySelector(`#total-withdrawn-${itemId}`);
@@ -276,22 +317,24 @@ function updateStockValue(itemId, field, val, rowEl) {
     totalWithdrawnEl.textContent = item.stockWithdrawal;
   }
   
+  const netStock = item.morningStock - item.count + item.morningWithdrawal + item.afternoonWithdrawal;
+  const netStockEl = rowEl.querySelector(`#net-stock-${itemId}`);
+  if (netStockEl) {
+    netStockEl.textContent = netStock;
+  }
+  
   storage.save();
   
   if (oldVal !== val) {
     const translations = {
-      morningStock: 'จำนวนของที่มีในห้องสต็อกช่วงเช้า',
-      morningWithdrawal: 'จำนวนของที่เบิกจากห้องสต็อกช่วงเช้า',
-      afternoonStock: 'จำนวนของที่มีในห้องสต็อกช่วงบ่าย',
-      afternoonWithdrawal: 'จำนวนของที่เบิกจากห้องสต็อกช่วงบ่าย'
+      morningStock: 'สต็อคที่มีในห้อง',
+      morningWithdrawal: 'จำนวนของที่เบิกจากห้องสต็อคช่วงเช้า',
+      afternoonWithdrawal: 'จำนวนของที่เบิกจากห้องสต็อคช่วงบ่าย',
+      defective: 'สินค้ามีตำหนิ'
     };
     const cleanFieldName = translations[field] || field;
     
     let logMsg = `อัพเดท ${cleanFieldName} ${item.name} จาก ${oldVal} เป็น ${val}`;
-    if (field === 'morningStock') {
-      logMsg += ` (ปรับจำนวนมีในห้องสต็อกช่วงบ่ายเป็น ${val} อัตโนมัติ)`;
-    }
-    
     addLog(logMsg, 'info');
   }
 }
@@ -339,7 +382,8 @@ function addItem(name, category) {
     morningWithdrawal: 0,
     afternoonStock: 0,
     afternoonWithdrawal: 0,
-    stockWithdrawal: 0
+    stockWithdrawal: 0,
+    defective: 0
   };
   
   state.items.push(newItem);
@@ -468,12 +512,13 @@ function updateSummaryDashboard() {
       
       let rowsHtml = '';
       categoryItems.sort((a, b) => b.count - a.count).forEach(item => {
-        const remainingInStock = Math.max(0, item.afternoonStock - item.afternoonWithdrawal);
+        const netStock = item.morningStock - item.count + item.morningWithdrawal + item.afternoonWithdrawal;
         rowsHtml += `
           <tr>
             <td style="padding: 0.5rem 0;"><strong>${escapeHTML(item.name)}</strong></td>
             <td style="text-align: right; padding: 0.5rem 0; font-feature-settings: 'tnum';">${item.stockWithdrawal}</td>
-            <td style="text-align: right; padding: 0.5rem 0; font-feature-settings: 'tnum';">${remainingInStock}</td>
+            <td style="text-align: right; padding: 0.5rem 0; font-feature-settings: 'tnum';">${netStock}</td>
+            <td style="text-align: right; padding: 0.5rem 0; font-feature-settings: 'tnum';">${item.defective}</td>
             <td style="text-align: right; padding: 0.5rem 0; font-weight: 600; font-feature-settings: 'tnum';">${item.count}</td>
           </tr>
         `;
@@ -489,7 +534,8 @@ function updateSummaryDashboard() {
             <tr>
               <th style="padding: 0.25rem 0; background: none; font-size: 0.8rem;">สินค้า</th>
               <th style="text-align: right; padding: 0.25rem 0; background: none; font-size: 0.8rem;">เบิกจากห้องสต็อก</th>
-              <th style="text-align: right; padding: 0.25rem 0; background: none; font-size: 0.8rem;">เหลือในห้องสต็อก</th>
+              <th style="text-align: right; padding: 0.25rem 0; background: none; font-size: 0.8rem;">สต็อคสุทธิ</th>
+              <th style="text-align: right; padding: 0.25rem 0; background: none; font-size: 0.8rem;">สินค้ามีตำหนิ</th>
               <th style="text-align: right; padding: 0.25rem 0; background: none; font-size: 0.8rem;">ขายได้</th>
             </tr>
           </thead>
@@ -590,7 +636,7 @@ el.exportPdfBtn.addEventListener('click', () => {
   try {
     window.print();
   } catch (e) {
-    alert('ไม่สามารถเปิดหน้าต่างพิมพ์ได้เนื่องจากข้อจำกัดของเบราว์เซอร์ กรุณากดปุ่ม Ctrl + P (หรือ Cmd + P บน Mac) เพื่อบันทึกเป็น PDF แทน');
+    alert('ไม่สามารถเปิดหน้าต่างพิมพ์ได้เนื่องจากข้อจำกัดของเบราว์เซอร์');
   }
 });
 
@@ -601,18 +647,70 @@ window.addEventListener('beforeprint', () => {
 el.resetCountsBtn.addEventListener('click', () => {
   if (confirm('คุณต้องการรีเซ็ตยอดขายและยอดเบิกทั้งหมดใช่หรือไม่? (รายชื่อสินค้าทั้งหมดจะยังคงอยู่)')) {
     state.items.forEach(item => {
+      const netStock = item.morningStock - item.count + item.morningWithdrawal + item.afternoonWithdrawal;
+      item.morningStock = netStock;
       item.count = 0;
-      item.morningStock = 0;
       item.morningWithdrawal = 0;
       item.afternoonStock = 0;
       item.afternoonWithdrawal = 0;
       item.stockWithdrawal = 0;
+      item.defective = 0;
     });
     storage.save();
     renderItems();
-    addLog('รีเซ็ตยอดขายและยอดเบิกสต็อกทั้งหมดเป็น 0', 'clear');
+    addLog('รีเซ็ตยอดขายและยอดเบิกสต็อกทั้งหมดเป็น 0 (นำสต็อกสุทธิไปตั้งเป็นสต็อกที่มีในห้อง)', 'clear');
   }
 });
+
+const quickWithdrawForm = document.getElementById('quick-withdraw-form');
+const withdrawCategorySelect = document.getElementById('withdraw-category');
+const withdrawCancelBtn = document.getElementById('withdraw-cancel-btn');
+
+if (withdrawCategorySelect) {
+  withdrawCategorySelect.addEventListener('change', () => {
+    updateQuickWithdrawItems();
+  });
+}
+
+if (quickWithdrawForm) {
+  quickWithdrawForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const itemId = document.getElementById('withdraw-item').value;
+    const qty = parseInt(document.getElementById('withdraw-qty').value) || 0;
+    
+    if (!itemId || qty <= 0) return;
+
+    const item = state.items.find(i => i.id === itemId);
+    if (item) {
+      const now = new Date();
+      const hours = now.getHours();
+      const isAM = hours < 12;
+      
+      if (isAM) {
+        item.morningWithdrawal += qty;
+      } else {
+        item.afternoonWithdrawal += qty;
+      }
+      item.stockWithdrawal = item.morningWithdrawal + item.afternoonWithdrawal;
+      
+      storage.save();
+      renderStockTable();
+      
+      quickWithdrawForm.reset();
+      updateQuickWithdrawItems();
+      
+      const periodLabel = isAM ? 'ช่วงเช้า (AM)' : 'ช่วงบ่าย (PM)';
+      addLog(`เบิกด่วนสำหรับ **${item.name}** จำนวน **${qty}** ชิ้นใน**${periodLabel}** สำเร็จ`, 'info');
+    }
+  });
+}
+
+if (withdrawCancelBtn && quickWithdrawForm) {
+  withdrawCancelBtn.addEventListener('click', () => {
+    quickWithdrawForm.reset();
+    updateQuickWithdrawItems();
+  });
+}
 
 
 function init() {
